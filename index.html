@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국아이치(주) - Water Meter Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Added Chart.js CDN -->
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Main Header (h1) Styles */
+        h1 {
+            color: #337ab7;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 0; /* Remove default margin */
+        }
+
+        /* Section Styles */
+        section {
+            background: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 960px; /* Control maximum width of sections */
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form div {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Important for width calculation */
+        }
+
+        /* Button Styles */
+        button {
+            background-color: #337ab7;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em; /* Consistent font size */
+        }
+
+        button:hover {
+            background-color: #286090; /* Darker blue on hover */
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        /* Specific Section Styling */
+        #loginSection {
+            width: 350px; /* Adjusted width for better appearance */
+            margin: 50px auto;
+        }
+
+        #mainContentSection header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #userInfo {
+            font-weight: bold;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        /* Minor adjustments for headings within sections */
+        section h2 {
+            margin-top: 0;
+            color: #337ab7;
+        }
+        section h3 {
+            margin-top: 15px;
+            color: #555;
+        }
+         section h4 {
+            margin-top: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>한국아이치(주) - Water Meter Management System</h1>
+
+    <section id="loginSection">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </section>
+
+    <section id="mainContentSection" style="display:none;">
+        <header>
+            <p id="userInfo"></p>
+            <button id="logoutButton">Logout</button>
+        </header>
+
+        <section id="dashboardSection">
+            <h2>Dashboard</h2>
+            <div id="manufacturingChartContainer">
+                <p>Manufacturing Chart Placeholder</p>
+            </div>
+            <div id="salesChartContainer">
+                <p>Sales Chart Placeholder</p>
+            </div>
+            <div id="revenueDisplay">
+                <p>Revenue Display Placeholder (Admin Only)</p>
+            </div>
+        </section>
+
+        <section id="adminSection">
+            <h2>Admin</h2>
+            <section id="userManagementSection">
+                <h3>User Management</h3>
+                <form id="addUserForm">
+                    <h4>Add User</h4>
+                    <div>
+                        <label for="addUsername">Username:</label> <!-- Changed ID -->
+                        <input type="text" id="addUsername" name="addUsername" required>
+                    </div>
+                    <div>
+                        <label for="addUserPassword">Password:</label> <!-- Changed ID -->
+                        <input type="password" id="addUserPassword" name="addUserPassword" required>
+                    </div>
+                    <div>
+                        <label for="addUserRole">Role:</label> <!-- Changed ID -->
+                        <select id="addUserRole" name="addUserRole">
+                            <option value="user">User</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit">Add User</button>
+                </form>
+                <table id="userListTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- User list will be populated here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="productManagementSection">
+                <h3>Product Management</h3>
+                <form id="productForm"> <!-- Changed ID -->
+                    <h4>Add/Edit Product</h4>
+                    <input type="hidden" id="editProductId"> <!-- Added hidden field -->
+                    <div>
+                        <label for="productName">Product Name:</label> <!-- Changed from productType -->
+                        <input type="text" id="productName" name="productName" required>
+                    </div>
+                    <div>
+                        <label for="productManufacturingDate">Manufacturing Date:</label> <!-- Changed ID -->
+                        <input type="date" id="productManufacturingDate" name="productManufacturingDate" required>
+                    </div>
+                    <div>
+                        <label for="productInitialQuantity">Initial Quantity:</label> <!-- Changed label and ID -->
+                        <input type="number" id="productInitialQuantity" name="productInitialQuantity" required>
+                    </div>
+                    <button type="submit" id="productSubmitButton">Add Product</button> <!-- Added ID, changed text -->
+                </form>
+                <table id="productListTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th> <!-- Changed from Type -->
+                            <th>Mfg. Date</th>
+                            <th>Total Qty</th>
+                            <th>Sold Qty</th>
+                            <th>Current Qty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Product list will be populated here -->
+                    </tbody>
+                </table>
+            </section>
+        </section>
+
+        <section id="managerSection">
+            <h2>Manager Tools</h2>
+            <section id="manufacturingInputSection">
+                <h3>Add Manufacturing Record</h3> <!-- Updated Heading -->
+                <form id="manufacturingForm">
+                    <div>
+                        <label for="manufacturingProductSelect">Select Product:</label>
+                        <select id="manufacturingProductSelect" name="manufacturingProductSelect" required>
+                            <!-- Product options will be populated here by populateManufacturingProductSelect -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="manufacturingDateInput">Manufacturing Date:</label> <!-- Updated ID -->
+                        <input type="date" id="manufacturingDateInput" name="manufacturingDateInput" required>
+                    </div>
+                    <div>
+                        <label for="manufacturingQuantityInput">Quantity Manufactured:</label> <!-- Updated ID and Label -->
+                        <input type="number" id="manufacturingQuantityInput" name="manufacturingQuantityInput" min="1" required>
+                    </div>
+                    <button type="submit">Add Manufacturing Data</button>
+                </form>
+            </section>
+        </section>
+
+        <section id="userSection">
+            <h2>User Tools</h2> <!-- Changed heading -->
+            <section id="salesInputSection">
+                <h3>Record Sale</h3> <!-- Changed heading -->
+                <form id="salesForm">
+                    <div>
+                        <label for="salesProductSelect">Select Product:</label> <!-- Changed ID -->
+                        <select id="salesProductSelect" name="salesProductSelect" required>
+                            <!-- Product options will be populated here by populateSalesProductSelect -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="saleDateInput">Sale Date:</label> <!-- Changed ID -->
+                        <input type="date" id="saleDateInput" name="saleDateInput" required>
+                    </div>
+                    <div>
+                        <label for="saleQuantityInput">Quantity Sold:</label> <!-- Changed ID -->
+                        <input type="number" id="saleQuantityInput" name="saleQuantityInput" min="1" required>
+                    </div>
+                    <button type="submit">Record Sale</button> <!-- Changed button text -->
+                </form>
+            </section>
+        </section>
+    </section>
+
+    <script>
+        // This script powers a single-page application for Water Meter Management.
+        // It handles user authentication, role-based views, and CRUD operations for users and products,
+        // as well as recording manufacturing and sales data, and displaying dashboard charts.
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Constants for localStorage keys ---
+            // These keys are used to store and retrieve data from the browser's localStorage.
+            const USERS_KEY = 'watermeter_users'; // Key for storing user credential and role data
+            const PRODUCTS_KEY = 'watermeter_products'; // Key for storing product data
+            const SALES_KEY = 'watermeter_sales';       // Key for storing sales records
+            const MANUFACTURING_KEY = 'watermeter_manufacturing_records'; // Key for manufacturing records
+            // const CURRENT_USER_KEY = 'watermeter_current_user'; // Old key, replaced by sessionStorage
+
+            // --- Constants for sessionStorage keys ---
+            // sessionStorage is used for data that should persist only for the duration of the page session.
+            const CURRENT_USER_SESSION_KEY = 'watermeter_current_user_session'; // Key for current user session
+
+            let currentUser = null; // Global variable to hold the currently logged-in user object
+
+            // --- localStorage Helper Functions ---
+            // Simplifies getting and setting data in localStorage, handling JSON parsing and stringification.
+
+            /**
+             * Retrieves data from localStorage by key and parses it as JSON.
+             * @param {string} key - The key of the data to retrieve.
+             * @returns {object|array|null} The parsed data, or null if not found or error during parsing.
+             */
+            function getData(key) {
+                const data = localStorage.getItem(key);
+                try {
+                    // If data exists, parse it, otherwise return null (or an empty array for list-like data if preferred by caller)
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error(`Error parsing JSON from localStorage for key "${key}":`, error);
+                    return null; // Return null on error to prevent application crash
+                }
+            }
+
+            /**
+             * Stringifies data to JSON and stores it in localStorage by key.
+             * @param {string} key - The key under which to store the data.
+             * @param {object|array} data - The data to store.
+             */
+            function setData(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                } catch (error) {
+                    // This can happen if data is too large or contains circular references not handled by JSON.stringify
+                    console.error(`Error stringifying JSON for localStorage for key "${key}":`, error);
+                }
+            }
+
+            // --- Initialization ---
+            /**
+             * Initializes the application.
+             * Checks if essential data structures exist in localStorage and creates them with empty arrays if not.
+             * Creates a default admin user if no users exist in localStorage.
+             * Checks for an existing login session in sessionStorage to restore user state.
+             */
+            function initApp() {
+                // Ensure localStorage keys are initialized with empty arrays if they don't exist to prevent errors.
+                if (!getData(USERS_KEY)) {
+                    setData(USERS_KEY, []);
+                }
+                if (!getData(PRODUCTS_KEY)) {
+                    setData(PRODUCTS_KEY, []);
+                }
+                if (!getData(SALES_KEY)) {
+                    setData(SALES_KEY, []);
+                }
+                if (!getData(MANUFACTURING_KEY)) {
+                    setData(MANUFACTURING_KEY, []);
+                }
+
+                // Create a default admin user if no users are found in localStorage.
+                // This ensures the application is usable on first launch.
+                let users = getData(USERS_KEY);
+                if (!users || users.length === 0) { 
+                    users = []; // Initialize if null from getData error
+                    const adminUser = {
+                        id: Date.now(), // Simple unique ID using timestamp
+                        username: 'admin',
+                        // IMPORTANT: Storing passwords in plain text is HIGHLY INSECURE.
+                        // In a real-world application, passwords must be hashed and salted securely, ideally on a server-side.
+                        // This is for demonstration purposes only in this client-side application.
+                        password: 'adminpassword', 
+                        role: 'admin'
+                    };
+                    users.push(adminUser);
+                    setData(USERS_KEY, users);
+                    console.log('Default admin user "admin" with password "adminpassword" created.');
+                }
+                
+                checkLoginState(); // Determine initial view based on current session status
+            }
+
+            // --- Authentication ---
+            // Handles user login, logout, and session checking.
+
+            /**
+             * Handles the login form submission.
+             * Retrieves username and password, validates them against users stored in localStorage.
+             * On successful login, sets `currentUser`, stores session in `sessionStorage`, and updates UI.
+             * On failure, displays an error message.
+             * @param {Event} event - The form submission event.
+             */
+            function handleLogin(event) {
+                event.preventDefault(); // Prevent default HTML form submission behavior
+                const usernameInput = document.getElementById('username');
+                const passwordInput = document.getElementById('password');
+                const username = usernameInput.value; // Get username from input
+                const password = passwordInput.value; // Get password from input
+
+                const users = getData(USERS_KEY) || []; // Get users, or empty array if none/error
+                // IMPORTANT: Direct password comparison is insecure. This is for demonstration only.
+                const foundUser = users.find(user => user.username === username && user.password === password);
+
+                if (foundUser) {
+                    currentUser = foundUser; // Set current user globally
+                    // Store user session in sessionStorage to persist across page refreshes (but not browser close).
+                    sessionStorage.setItem(CURRENT_USER_SESSION_KEY, JSON.stringify(currentUser));
+                    showMainContentView(); // Switch to main app view
+                    updateUIForRole();     // Update UI elements based on user role
+                    usernameInput.value = ''; // Clear username field
+                    passwordInput.value = ''; // Clear password field
+                    const existingError = document.getElementById('loginErrorMessage');
+                    if (existingError) existingError.remove(); // Clear any old error messages
+                } else {
+                    // Display error message if login fails
+                    let errorMessageElement = document.getElementById('loginErrorMessage');
+                    if (!errorMessageElement) { // Create error message element if it doesn't exist
+                        errorMessageElement = document.createElement('p');
+                        errorMessageElement.id = 'loginErrorMessage';
+                        errorMessageElement.className = 'error-message'; // Apply CSS class for styling
+                        const loginForm = document.getElementById('loginForm');
+                        if (loginForm) loginForm.appendChild(errorMessageElement); 
+                        else console.error("Login form not found to append error message.");
+                    }
+                    errorMessageElement.textContent = 'Invalid username or password.';
+                }
+            }
+
+            /**
+             * Handles user logout. Clears the current session and resets the UI to the login view.
+             */
+            function handleLogout() {
+                sessionStorage.removeItem(CURRENT_USER_SESSION_KEY); // Clear user session
+                currentUser = null; // Reset global current user variable
+                showLoginView();    // Revert to login screen
+                console.log('User logged out.');
+            }
+
+            /**
+             * Checks if a user session exists in sessionStorage (e.g., from a previous page load in the same session).
+             * If a valid session is found, restores `currentUser` and updates the UI.
+             * Otherwise, shows the login view.
+             */
+            function checkLoginState() {
+                const sessionUser = sessionStorage.getItem(CURRENT_USER_SESSION_KEY);
+                if (sessionUser) {
+                    try {
+                        currentUser = JSON.parse(sessionUser); // Restore currentUser from session
+                        showMainContentView(); // Show main application view
+                        updateUIForRole();     // Set UI elements according to role
+                    } catch (error) {
+                        console.error("Error parsing session user data from sessionStorage:", error);
+                        sessionStorage.removeItem(CURRENT_USER_SESSION_KEY); // Clear potentially corrupted session data
+                        showLoginView(); // Fallback to login view
+                    }
+                } else {
+                    showLoginView(); // No session found, show login view
+                }
+            }
+
+            // --- Helper for UI Element Visibility ---
+            /**
+             * Shows or hides a DOM element based on its ID.
+             * @param {string} elementId - The ID of the DOM element to toggle.
+             * @param {boolean} show - True to show the element (sets display to 'block'), false to hide (sets display to 'none').
+             */
+            function toggleElement(elementId, show) {
+                const el = document.getElementById(elementId);
+                if (el) {
+                    el.style.display = show ? 'block' : 'none';
+                } else {
+                    // Warn if an expected element is not found, helps in debugging HTML/JS mismatches.
+                    console.warn(`Element with ID '${elementId}' not found for toggling visibility.`);
+                }
+            }
+
+            // --- Role-Based UI Update ---
+            /**
+             * Configures the visibility of different application sections and functionalities
+             * based on the `currentUser`'s role. This is the core of the client-side
+             * role-based access control (RBAC).
+             */
+            function updateUIForRole() {
+                if (!currentUser) {
+                    // Safety check: if no user is logged in, hide all main sections.
+                    console.warn('updateUIForRole called without a current user. All sections will be hidden.');
+                    ['adminSection', 'managerSection', 'userSection', 'dashboardSection', 'revenueDisplay'].forEach(id => toggleElement(id, false));
+                    return;
+                }
+
+                const role = currentUser.role;
+                console.log('Updating UI for role:', role);
+
+                // Start by hiding all potentially role-specific sections to ensure a clean slate.
+                toggleElement('adminSection', false);
+                toggleElement('managerSection', false);
+                toggleElement('userSection', false); 
+                toggleElement('revenueDisplay', false); 
+                toggleElement('dashboardSection', false); 
+
+                // Common sections for any logged-in user:
+                // All logged-in users get access to the sales input form and the main dashboard.
+                toggleElement('userSection', true);         // Contains the sales input form
+                populateSalesProductSelect();               // Populate products for the sales form dropdown
+                toggleElement('dashboardSection', true);    // Main dashboard area (charts container)
+                renderManufacturingChart();                 // Render/update manufacturing chart
+                renderSalesChart();                         // Render/update sales chart
+
+                // Role-specific section visibility and data population:
+                if (role === 'admin') {
+                    // Admin gets access to all sections and functionalities.
+                    toggleElement('adminSection', true);    // User Management and Product Management
+                    renderUserList();                       // Populate the user list table
+                    renderProductList();                    // Populate the product list table
+                    
+                    toggleElement('managerSection', true);  // Manufacturing Input (Admin also has Manager capabilities)
+                    populateManufacturingProductSelect();   // Populate products for manufacturing form dropdown
+                    
+                    toggleElement('revenueDisplay', true);  // Revenue Display section in dashboard
+                    displayRevenue();                       // Calculate and show total revenue
+                } else if (role === 'manager') {
+                    // Manager gets access to manufacturing input and sales input (common).
+                    toggleElement('managerSection', true);  // Manufacturing Input
+                    populateManufacturingProductSelect();   // Populate products for manufacturing form
+                    
+                    if(revenueDisplay) revenueDisplay.innerHTML = ''; // Ensure revenue is not shown for manager
+                    // Visibility of revenueDisplay container is already handled (hidden by default, shown for admin)
+                } else if (role === 'user') {
+                    // 'user' role primarily uses 'userSection' (sales) and 'dashboardSection', already enabled above.
+                    // They do not get access to 'adminSection', 'managerSection', or 'revenueDisplay'.
+                    if(revenueDisplay) revenueDisplay.innerHTML = ''; // Ensure revenue is not shown for user
+                }
+            }
+            
+            // --- View Management (Refinements) ---
+            /**
+             * Switches the application view to the login screen.
+             * Hides main content sections and clears user-specific information from the UI.
+             */
+            function showLoginView() {
+                toggleElement('loginSection', true);        // Show login form
+                toggleElement('mainContentSection', false); // Hide main application content
+                
+                // Explicitly hide all main content sub-sections to ensure a clean UI state on logout.
+                ['dashboardSection', 'adminSection', 'managerSection', 'userSection', 'revenueDisplay'].forEach(id => toggleElement(id, false));
+
+                const userInfoDisplay = document.getElementById('userInfo');
+                if (userInfoDisplay) userInfoDisplay.textContent = ''; // Clear "Welcome, user" message
+                
+                // Reset product form if it exists and the function is defined.
+                // This is important to clear any edit state (e.g., product ID in hidden field).
+                if (typeof resetProductForm === 'function') { 
+                    resetProductForm(); 
+                }
+                // Other forms (addUserForm, manufacturingForm, salesForm) are generally reset on their own submit actions.
+                // If sensitive data could remain, they should also be reset here.
+            }
+
+            /**
+             * Switches the application view to the main content area (typically after a successful login).
+             * Displays user-specific information like username and role.
+             */
+            function showMainContentView() {
+                toggleElement('loginSection', false);       // Hide login form
+                toggleElement('mainContentSection', true);  // Show main application content
+
+                if (currentUser) {
+                    const userInfoDisplay = document.getElementById('userInfo');
+                    if(userInfoDisplay) userInfoDisplay.textContent = `Welcome, ${currentUser.username} (${currentUser.role})`;
+                }
+                // Note: updateUIForRole() is called by the functions that call showMainContentView (handleLogin, checkLoginState)
+                // after currentUser is set, to correctly tailor the UI.
+            }
+
+            // --- Event Listeners (Initial Setup for Login/Logout) ---
+            // These are fundamental listeners for the application's operation.
+            const loginForm = document.getElementById('loginForm'); 
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            } else {
+                // If the login form isn't found, the app is critically broken.
+                console.error("Fatal Error: Login form element not found. Application cannot initialize login functionality.");
+            }
+
+            const logoutButton = document.getElementById('logoutButton');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+            } else {
+                console.error("Fatal Error: Logout button element not found.");
+            }
+            
+            // Initialize the application: set up localStorage if needed, create default admin, check session.
+            initApp();
+
+            // --- Admin Functionality: User Management ---
+            // DOM element references for the user management section within the Admin panel.
+            // These are fetched once for efficiency.
+            const addUserForm = document.getElementById('addUserForm');
+            const addUsernameInput = document.getElementById('addUsername');
+            const addUserPasswordInput = document.getElementById('addUserPassword');
+            const addUserRoleSelect = document.getElementById('addUserRole');
+            const userListTableBody = document.getElementById('userListTable') ? document.getElementById('userListTable').querySelector('tbody') : null;
+
+            /**
+             * Renders the list of users in the admin user management table.
+             * Fetches users from localStorage and dynamically creates table rows.
+             */
+            function renderUserList() {
+                if (!userListTableBody) {
+                    console.warn('User list table body element (#userListTable tbody) not found. Cannot render user list.');
+                    return; 
+                }
+                const users = getData(USERS_KEY) || []; // Fetch users, default to empty array
+                userListTableBody.innerHTML = ''; // Clear any existing rows before rendering
+
+                users.forEach(user => {
+                    const row = userListTableBody.insertRow(); // Create a new row
+                    row.insertCell().textContent = user.username; // Add username cell
+                    row.insertCell().textContent = user.role;     // Add role cell
+
+                    const actionsCell = row.insertCell(); // Cell for action buttons
+                    
+                    // "Reset Password" button for each user
+                    const resetPassButton = document.createElement('button');
+                    resetPassButton.textContent = 'Reset Password';
+                    resetPassButton.classList.add('action-button', 'reset-pass-btn'); // For styling and event delegation
+                    resetPassButton.dataset.userId = user.id; // Store user ID in data attribute for easy retrieval
+                    actionsCell.appendChild(resetPassButton);
+
+                    actionsCell.appendChild(document.createTextNode(' ')); // Add a space for visual separation
+
+                    // "Delete User" button, but prevent admin from deleting their own currently logged-in account.
+                    if (currentUser && currentUser.id !== user.id) {
+                        const deleteUserButton = document.createElement('button');
+                        deleteUserButton.textContent = 'Delete User';
+                        deleteUserButton.classList.add('action-button', 'delete-user-btn');
+                        deleteUserButton.dataset.userId = user.id;
+                        actionsCell.appendChild(deleteUserButton);
+                    }
+                });
+            }
+
+            /**
+             * Handles the form submission for adding a new user.
+             * Validates input, checks for existing username, creates new user object, and saves to localStorage.
+             * @param {Event} event - The form submission event.
+             */
+            function handleAddUser(event) {
+                event.preventDefault(); // Prevent page reload
+                // Ensure all form elements are present before trying to access their values
+                if (!addUsernameInput || !addUserPasswordInput || !addUserRoleSelect) {
+                    alert('User form input elements are missing from the page. Cannot add user.');
+                    return;
+                }
+                const username = addUsernameInput.value.trim(); // Get username, remove leading/trailing whitespace
+                const password = addUserPasswordInput.value;    // Get password (do not trim, as spaces might be intentional)
+                const role = addUserRoleSelect.value;           // Get selected role
+
+                if (!username || !password) { // Basic validation
+                    alert('Username and password are required.');
+                    return;
+                }
+
+                const users = getData(USERS_KEY) || [];
+                if (users.some(user => user.username === username)) { // Check for username uniqueness
+                    alert('Username already exists. Please choose a different username.');
+                    return;
+                }
+
+                const newUser = {
+                    id: Date.now(), // Generate a simple unique ID
+                    username: username,
+                    // SECURITY WARNING: Storing passwords in plain text is a major security risk.
+                    // This is for demonstration purposes only. Real applications MUST hash passwords.
+                    password: password, 
+                    role: role
+                };
+                users.push(newUser); // Add new user to the array
+                setData(USERS_KEY, users); // Save updated users array to localStorage
+                renderUserList(); // Refresh the displayed user list
+                if(addUserForm) addUserForm.reset(); // Clear the form fields
+                alert('User added successfully.');
+            }
+
+            /**
+             * Handles the action to delete a user, identified by userId.
+             * Prevents self-deletion by the currently logged-in admin.
+             * @param {string} userIdString - The ID of the user to delete, passed as a string from data attribute.
+             */
+            function handleDeleteUser(userIdString) {
+                const userId = parseInt(userIdString); // Convert ID to number for comparison
+                // Prevent admin from deleting their own account via this UI.
+                if (currentUser && currentUser.id === userId) {
+                    alert("Action not allowed: You cannot delete your own account.");
+                    return;
+                }
+                // Confirmation dialog before deletion.
+                if (confirm(`Are you sure you want to delete this user? This action cannot be undone.`)) {
+                    let users = getData(USERS_KEY) || [];
+                    users = users.filter(user => user.id !== userId); // Remove user from array
+                    setData(USERS_KEY, users); // Save updated array
+                    renderUserList(); // Refresh user list
+                    alert('User deleted successfully.');
+                }
+            }
+
+            /**
+             * Handles the action to reset a user's password.
+             * Prompts for a new password and updates it in localStorage.
+             * @param {string} userIdString - The ID of the user whose password is to be reset, as a string.
+             */
+            function handleResetPassword(userIdString) {
+                const userId = parseInt(userIdString);
+                const newPassword = prompt('Enter the new password for the user:'); // Prompt for new password
+                
+                if (newPassword === null) { // User pressed cancel on the prompt.
+                    return; // Do nothing if cancelled
+                }
+                
+                if (newPassword.trim() !== "") { // Check if password is not just whitespace
+                    let users = getData(USERS_KEY) || [];
+                    const userIndex = users.findIndex(user => user.id === userId); // Find user by ID
+                    if (userIndex > -1) {
+                        // SECURITY WARNING: Plain text password storage.
+                        users[userIndex].password = newPassword.trim(); // Update password (still plain text)
+                        setData(USERS_KEY, users); // Save changes
+                        alert('Password reset successfully.');
+                    } else {
+                        alert('User not found. Password not reset.'); // Should not happen if UI is correct
+                    }
+                } else { 
+                    alert('Password cannot be empty. Password not reset.');
+                }
+            }
+
+            // Event listener for the "Add User" form submission.
+            if (addUserForm) {
+                addUserForm.addEventListener('submit', handleAddUser);
+            } else {
+                console.warn('Add User form (addUserForm) not found. User creation functionality will be unavailable.');
+            }
+
+            // Event delegation for action buttons (delete, reset password) within the user list table.
+            // This allows handling clicks on buttons added dynamically.
+            if (userListTableBody) {
+                userListTableBody.addEventListener('click', function(event) {
+                    const target = event.target; // The actual element clicked
+                    // Check if the clicked element is a button and has a 'data-user-id' attribute.
+                    if (target.tagName === 'BUTTON' && target.dataset.userId) {
+                        const userId = target.dataset.userId; // Get the user ID from the button
+                        if (target.classList.contains('delete-user-btn')) { // Check if it's a delete button
+                            handleDeleteUser(userId);
+                        } else if (target.classList.contains('reset-pass-btn')) { // Check if it's a reset password button
+                            handleResetPassword(userId);
+                        }
+                    }
+                });
+            } else {
+                 console.warn('User list table body (#userListTable tbody) not found. User action buttons (delete/reset password) will not work.');
+            }
+
+            // --- Admin Functionality: Product Management ---
+            // DOM elements for product CRUD (Create, Read, Update, Delete) operations.
+            const productForm = document.getElementById('productForm');
+            const productNameInput = document.getElementById('productName');
+            const productManufacturingDateInput = document.getElementById('productManufacturingDate');
+            const productInitialQuantityInput = document.getElementById('productInitialQuantity'); // This field represents total manufactured quantity.
+            const editProductIdInput = document.getElementById('editProductId'); // Hidden input to store ID of product being edited.
+            const productSubmitButton = document.getElementById('productSubmitButton');
+            const productListTableBody = document.getElementById('productListTable') ? document.getElementById('productListTable').querySelector('tbody') : null;
+
+            /**
+             * Renders the list of products in the admin product management table.
+             * Displays product details and action buttons (Edit, Delete).
+             */
+            function renderProductList() {
+                if (!productListTableBody) {
+                    console.warn('Product list table body element (#productListTable tbody) not found. Cannot render product list.');
+                    return;
+                }
+                const products = getData(PRODUCTS_KEY) || []; // Fetch products
+                productListTableBody.innerHTML = ''; // Clear existing table content
+
+                products.forEach(product => {
+                    const row = productListTableBody.insertRow();
+                    row.insertCell().textContent = product.name;
+                    row.insertCell().textContent = product.manufacturingDate;
+                    row.insertCell().textContent = product.totalQuantity || 0; // Total quantity manufactured
+                    row.insertCell().textContent = product.quantitySold || 0;   // Total quantity sold
+                    // Calculated current stock: total manufactured minus total sold
+                    row.insertCell().textContent = (product.totalQuantity || 0) - (product.quantitySold || 0); 
+
+                    const actionsCell = row.insertCell(); // Cell for Edit/Delete buttons
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.classList.add('action-button', 'edit-product-btn');
+                    editButton.dataset.productId = product.id; // Store product ID for the action
+                    actionsCell.appendChild(editButton);
+
+                    actionsCell.appendChild(document.createTextNode(' ')); // Visual spacing
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.classList.add('action-button', 'delete-product-btn');
+                    deleteButton.dataset.productId = product.id;
+                    actionsCell.appendChild(deleteButton);
+                });
+            }
+
+            /**
+             * Resets the product form to its default state, typically for adding a new product.
+             * Clears input fields, the hidden edit ID, and resets the submit button text.
+             */
+            function resetProductForm() {
+                if (productForm) productForm.reset(); // Standard form reset
+                if (editProductIdInput) editProductIdInput.value = ''; // Clear hidden ID, exiting edit mode
+                if (productSubmitButton) productSubmitButton.textContent = 'Add Product'; // Reset button text to default
+            }
+
+            /**
+             * Handles submission of the product form, for both adding new and editing existing products.
+             * Differentiates based on the presence of a value in `editProductIdInput`.
+             * @param {Event} event - The form submission event.
+             */
+            function handleProductFormSubmit(event) {
+                event.preventDefault();
+                // Ensure all required form input elements are accessible
+                if (!productNameInput || !productManufacturingDateInput || !productInitialQuantityInput || !editProductIdInput) {
+                    alert('Product form input elements are missing from the page. Cannot process product information.');
+                    return;
+                }
+
+                const name = productNameInput.value.trim();
+                const manufacturingDate = productManufacturingDateInput.value;
+                const totalQuantity = parseInt(productInitialQuantityInput.value); // This is the total manufactured quantity
+                const editId = editProductIdInput.value; // If this has a value, we are in edit mode
+
+                // Validate inputs
+                if (!name || !manufacturingDate || isNaN(totalQuantity) || totalQuantity < 0) {
+                    alert('Please fill in all product fields correctly. Quantity must be a non-negative number.');
+                    return;
+                }
+
+                let products = getData(PRODUCTS_KEY) || [];
+                if (editId) { // Edit existing product
+                    const productIndex = products.findIndex(p => p.id === parseInt(editId));
+                    if (productIndex > -1) { // Product found
+                        products[productIndex].name = name;
+                        products[productIndex].manufacturingDate = manufacturingDate;
+                        products[productIndex].totalQuantity = totalQuantity; 
+                        
+                        // Data integrity check: Warn if the new total quantity is less than what's already sold.
+                        // This doesn't prevent the update but alerts the admin to a potential issue.
+                        if (products[productIndex].totalQuantity < (products[productIndex].quantitySold || 0)) {
+                            alert('Warning: The new total quantity is less than the quantity already sold for this product. This might indicate a data inconsistency. Please review sales records or adjust the total quantity if necessary.');
+                        }
+                        setData(PRODUCTS_KEY, products);
+                        alert('Product updated successfully.');
+                    } else {
+                        // Product to edit was not found (e.g., deleted in another session/tab).
+                        alert('Product not found for editing. It might have been deleted. Please refresh the product list.');
+                        resetProductForm(); // Reset form as the product context is lost
+                        renderProductList(); // Refresh list to show current state
+                        return; 
+                    }
+                } else { // Add new product
+                    const newProduct = {
+                        id: Date.now(),
+                        name: name,
+                        manufacturingDate: manufacturingDate,
+                        totalQuantity: totalQuantity,
+                        quantitySold: 0 // New products always start with zero quantity sold
+                    };
+                    products.push(newProduct);
+                    setData(PRODUCTS_KEY, products);
+                    alert('Product added successfully.');
+                }
+                renderProductList(); // Refresh the displayed product list
+                resetProductForm();  // Clear the form for the next entry or edit
+            }
+
+            /**
+             * Populates the product form fields with the data of a selected product for editing.
+             * @param {string} productIdString - The ID of the product to edit, passed as a string.
+             */
+            function handleEditProduct(productIdString) {
+                const productId = parseInt(productIdString);
+                const products = getData(PRODUCTS_KEY) || [];
+                const product = products.find(p => p.id === productId); // Find the product
+                
+                // Ensure product and all form elements exist before populating
+                if (product && productNameInput && productManufacturingDateInput && productInitialQuantityInput && editProductIdInput && productSubmitButton) {
+                    productNameInput.value = product.name;
+                    productManufacturingDateInput.value = product.manufacturingDate;
+                    productInitialQuantityInput.value = product.totalQuantity;
+                    editProductIdInput.value = product.id; // Set hidden ID field to signify edit mode
+                    productSubmitButton.textContent = 'Save Changes'; // Change button text for clarity
+                    if (productForm) productForm.scrollIntoView({ behavior: 'smooth' }); // Scroll form into view for better UX
+                } else {
+                    alert('Could not find product details or form elements required to populate for editing.');
+                }
+            }
+
+            /**
+             * Handles the deletion of a product.
+             * Prompts for confirmation before deleting.
+             * @param {string} productIdString - The ID of the product to delete, as a string.
+             */
+            function handleDeleteProduct(productIdString) {
+                const productId = parseInt(productIdString);
+                // COMMENT: Deleting a product has implications for data integrity. Sales and manufacturing records might reference this product ID.
+                // In a more complex system, this might be a "soft delete" (marking the product as inactive) or involve checks
+                // for existing related records before allowing deletion. For this application, it's a direct removal.
+                if (confirm(`Are you sure you want to delete this product: ${products.find(p=>p.id === productId)?.name || 'Unknown'}? This action cannot be undone and may affect sales/manufacturing history (though individual records will remain).`)) {
+                    let products = getData(PRODUCTS_KEY) || [];
+                    products = products.filter(p => p.id !== productId); // Remove product from array
+                    setData(PRODUCTS_KEY, products); // Update localStorage
+                    renderProductList(); // Refresh the product list
+                    resetProductForm();  // If the deleted product was being edited, clear the form.
+                    alert('Product deleted successfully.');
+                }
+            }
+
+            // Event listener for the product form (handles both add and edit submissions).
+            if (productForm) {
+                productForm.addEventListener('submit', handleProductFormSubmit);
+            } else {
+                console.warn("Product form (productForm) not found. Product management (add/edit) will be unavailable.");
+            }
+
+            // Event delegation for action buttons (edit, delete) in the product list table.
+            if (productListTableBody) {
+                productListTableBody.addEventListener('click', function(event) {
+                    const target = event.target;
+                    // Check if the clicked element is a button and has a 'data-product-id'
+                    if (target.tagName === 'BUTTON' && target.dataset.productId) {
+                        const productId = target.dataset.productId; 
+                        if (target.classList.contains('edit-product-btn')) { // Edit button clicked
+                            handleEditProduct(productId);
+                        } else if (target.classList.contains('delete-product-btn')) { // Delete button clicked
+                            handleDeleteProduct(productId);
+                        }
+                    }
+                });
+            } else {
+                console.warn("Product list table body (#productListTable tbody) not found. Product actions (edit/delete) will not work.");
+            }
+
+            // --- Manager Functionality: Manufacturing Input ---
+            // DOM elements for recording manufacturing data.
+            const manufacturingForm = document.getElementById('manufacturingForm');
+            const manufacturingProductSelect = document.getElementById('manufacturingProductSelect');
+            const manufacturingDateInput = document.getElementById('manufacturingDateInput'); 
+            const manufacturingQuantityInput = document.getElementById('manufacturingQuantityInput');
+
+            /**
+             * Populates the product select dropdown in the manufacturing input form.
+             * Lists all products, as manufacturing operations add to the stock.
+             */
+            function populateManufacturingProductSelect() {
+                if (!manufacturingProductSelect) {
+                    console.warn("Manufacturing product select dropdown (#manufacturingProductSelect) not found. Cannot populate.");
+                    return;
+                }
+                const products = getData(PRODUCTS_KEY) || [];
+                manufacturingProductSelect.innerHTML = '<option value="">-- Select a Product --</option>'; // Add a default, non-selectable option
+
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // Set product ID as option value
+                    option.textContent = product.name; // Display product name
+                    manufacturingProductSelect.appendChild(option);
+                });
+            }
+
+            /**
+             * Handles the form submission for adding a manufacturing record.
+             * This action increases the `totalQuantity` (total ever manufactured) of the selected product.
+             * @param {Event} event - The form submission event.
+             */
+            function handleAddManufacturingRecord(event) {
+                event.preventDefault();
+                // Ensure form elements are present
+                if (!manufacturingProductSelect || !manufacturingDateInput || !manufacturingQuantityInput) {
+                    alert('Manufacturing form input elements are missing. Cannot add manufacturing record.');
+                    return;
+                }
+
+                const productId = manufacturingProductSelect.value;
+                const date = manufacturingDateInput.value;
+                const quantity = parseInt(manufacturingQuantityInput.value);
+
+                // Validate inputs
+                if (!productId || !date || isNaN(quantity) || quantity <= 0) {
+                    alert('Please select a product, enter a valid manufacturing date, and a manufactured quantity greater than 0.');
+                    return;
+                }
+
+                let products = getData(PRODUCTS_KEY) || [];
+                const productIndex = products.findIndex(p => p.id === parseInt(productId));
+
+                if (productIndex === -1) { // Product not found
+                    alert('Selected product not found. It may have been deleted. Please refresh the product selection or check the product list.');
+                    populateManufacturingProductSelect(); // Refresh select in case product list changed
+                    return;
+                }
+
+                // Increase the total manufactured quantity for the product.
+                products[productIndex].totalQuantity = (products[productIndex].totalQuantity || 0) + quantity;
+                setData(PRODUCTS_KEY, products); // Save updated product data
+
+                // Create a detailed manufacturing record for historical tracking/auditing.
+                let manufacturingRecords = getData(MANUFACTURING_KEY) || [];
+                const newRecord = {
+                    id: Date.now(),
+                    productId: parseInt(productId),
+                    productName: products[productIndex].name, // Denormalize name for easier reporting later
+                    manufacturingDate: date,
+                    quantityManufactured: quantity,
+                    manufacturedBy: currentUser ? currentUser.username : 'system' // Track who recorded this
+                };
+                manufacturingRecords.push(newRecord);
+                setData(MANUFACTURING_KEY, manufacturingRecords); // Save manufacturing records
+
+                alert(`Successfully added ${quantity} units to product: ${products[productIndex].name}. New total manufactured quantity is ${products[productIndex].totalQuantity}.`);
+                if (manufacturingForm) manufacturingForm.reset(); // Reset the form
+                
+                // If admin is the current user, their product list view should update to reflect new total quantity.
+                if (currentUser && currentUser.role === 'admin' && typeof renderProductList === 'function') {
+                    renderProductList();
+                }
+                // Note: Charts and revenue updates are handled by the wrapper function if the dashboard is visible.
+            }
+
+            // Event listener for the manufacturing form submission.
+            if (manufacturingForm) {
+                manufacturingForm.addEventListener('submit', handleAddManufacturingRecord);
+            } else {
+                console.warn("Manufacturing form (manufacturingForm) not found. Manufacturing input functionality will be unavailable.");
+            }
+
+            // --- User (Employee) Functionality: Sales Input ---
+            // DOM elements for recording sales data.
+            const salesForm = document.getElementById('salesForm');
+            const salesProductSelect = document.getElementById('salesProductSelect');
+            const saleDateInput = document.getElementById('saleDateInput'); 
+            const saleQuantityInput = document.getElementById('saleQuantityInput');
+
+            /**
+             * Populates the product select dropdown in the sales input form.
+             * Only lists products that have available stock (where `totalQuantity - quantitySold > 0`).
+             * Displays current stock levels alongside product names for user convenience.
+             */
+            function populateSalesProductSelect() {
+                if (!salesProductSelect) {
+                    console.warn("Sales product select dropdown (#salesProductSelect) not found. Cannot populate.");
+                    return;
+                }
+                const products = getData(PRODUCTS_KEY) || [];
+                salesProductSelect.innerHTML = '<option value="">-- Select a Product --</option>'; // Default option
+
+                products.forEach(product => {
+                    const currentStock = (product.totalQuantity || 0) - (product.quantitySold || 0);
+                    if (currentStock > 0) { // Only show products that are in stock
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = `${product.name} (Stock: ${currentStock})`; // Show name and current stock
+                        salesProductSelect.appendChild(option);
+                    }
+                });
+            }
+
+            /**
+             * Handles the form submission for adding a sales record.
+             * This action increases `quantitySold` for the product and performs a stock availability check.
+             * @param {Event} event - The form submission event.
+             */
+            function handleAddSaleRecord(event) {
+                event.preventDefault();
+                // Ensure form elements are present
+                if (!salesProductSelect || !saleDateInput || !saleQuantityInput) {
+                    alert('Sales form input elements are missing. Cannot record sale.');
+                    return;
+                }
+
+                const productId = salesProductSelect.value;
+                const date = saleDateInput.value;
+                const quantity = parseInt(saleQuantityInput.value);
+
+                // Validate inputs
+                if (!productId || !date || isNaN(quantity) || quantity <= 0) {
+                    alert('Please select a product, enter a valid sale date, and a quantity sold greater than 0.');
+                    return;
+                }
+
+                let products = getData(PRODUCTS_KEY) || [];
+                const productIndex = products.findIndex(p => p.id === parseInt(productId));
+
+                if (productIndex === -1) { // Product not found
+                    alert('Selected product not found. It may have been deleted or stock updated. Please refresh selection.');
+                    populateSalesProductSelect(); // Refresh select to show current valid products
+                    return;
+                }
+
+                const product = products[productIndex];
+                const currentStock = (product.totalQuantity || 0) - (product.quantitySold || 0);
+
+                // Critical check: Ensure enough stock is available BEFORE recording the sale.
+                if (quantity > currentStock) {
+                    alert(`Not enough stock for ${product.name}. Requested: ${quantity}, Available: ${currentStock}. Sale not recorded.`);
+                    return;
+                }
+
+                // Update the quantity sold for the product.
+                products[productIndex].quantitySold = (products[productIndex].quantitySold || 0) + quantity;
+                setData(PRODUCTS_KEY, products); // Save updated product data
+
+                // Create a detailed sales record for historical tracking/auditing.
+                let salesRecords = getData(SALES_KEY) || [];
+                const newRecord = {
+                    id: Date.now(),
+                    productId: parseInt(productId),
+                    productName: product.name, // Denormalize name for easier reporting
+                    saleDate: date,
+                    quantitySold: quantity,
+                    soldBy: currentUser ? currentUser.username : 'system' // Track who made the sale
+                };
+                salesRecords.push(newRecord);
+                setData(SALES_KEY, salesRecords); // Save sales records
+
+                const newCurrentStock = (products[productIndex].totalQuantity || 0) - (products[productIndex].quantitySold || 0);
+                alert(`Successfully recorded sale of ${quantity} units of ${product.name}. Stock remaining: ${newCurrentStock}.`);
+                
+                if (salesForm) salesForm.reset(); // Reset the sales form
+                populateSalesProductSelect(); // Refresh product list in select, as stock levels have changed.
+
+                // If admin is the current user, their product list view should update to reflect new sold quantity.
+                if (currentUser && currentUser.role === 'admin' && typeof renderProductList === 'function') {
+                    renderProductList();
+                }
+                // Note: Charts and revenue updates are handled by the wrapper function if the dashboard is visible.
+            }
+
+            // Event listener for the sales form submission.
+            if (salesForm) {
+                salesForm.addEventListener('submit', handleAddSaleRecord);
+            } else {
+                console.warn("Sales form (salesForm) not found. Sales input functionality will be unavailable.");
+            }
+
+            // --- Dashboard & Charting ---
+            // DOM elements and global variables for Chart.js charts.
+            const manufacturingChartContainer = document.getElementById('manufacturingChartContainer');
+            const salesChartContainer = document.getElementById('salesChartContainer');
+            const revenueDisplay = document.getElementById('revenueDisplay'); 
+            let manufacturingChartInstance = null; // Holds the Chart.js object for the manufacturing chart
+            let salesChartInstance = null;       // Holds the Chart.js object for the sales chart
+            // COMMENT: FIXED_PRICE_PER_UNIT is a simplification. A real system would likely have per-product pricing,
+            // or pricing per sale, stored in sales records. This is for estimated revenue display.
+            const FIXED_PRICE_PER_UNIT = 10; // Used for estimated revenue calculation.
+
+            /**
+             * Renders or updates the manufacturing chart, displaying total manufactured stock per product.
+             * Uses Chart.js library.
+             */
+            function renderManufacturingChart() {
+                if (!manufacturingChartContainer) {
+                    console.warn('Manufacturing chart container (#manufacturingChartContainer) not found. Chart cannot be rendered.');
+                    return;
+                }
+                const products = getData(PRODUCTS_KEY) || [];
+                
+                let canvas = manufacturingChartContainer.querySelector('canvas');
+                if (!canvas) { // If canvas element doesn't exist, create it dynamically
+                    canvas = document.createElement('canvas');
+                    manufacturingChartContainer.innerHTML = ''; // Clear any placeholder text (e.g., <p>Loading...</p>)
+                    manufacturingChartContainer.appendChild(canvas);
+                }
+                const ctx = canvas.getContext('2d'); // Get 2D rendering context for the canvas
+
+                if (manufacturingChartInstance) { // If a chart instance already exists, destroy it before creating a new one
+                    manufacturingChartInstance.destroy(); // This prevents duplicate charts and memory leaks.
+                }
+                manufacturingChartInstance = new Chart(ctx, {
+                    type: 'bar', // Chart type: bar chart
+                    data: {
+                        labels: products.map(p => p.name), // Product names as labels on X-axis
+                        datasets: [{
+                            label: 'Quantity Manufactured (Total Stock)', // Legend label for the dataset
+                            data: products.map(p => p.totalQuantity || 0), // Data points (total manufactured quantity)
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)', // Bar color (blueish)
+                            borderColor: 'rgba(54, 162, 235, 1)',     // Bar border color
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { 
+                        responsive: true, // Make chart responsive to container size changes
+                        maintainAspectRatio: false, // Allows chart to better fit container height if CSS is set
+                        scales: { y: { beginAtZero: true } } // Ensure Y-axis starts at 0 for clarity
+                    }
+                });
+            }
+
+            /**
+             * Renders or updates the sales chart, displaying quantity sold per product.
+             * Uses Chart.js library.
+             */
+            function renderSalesChart() {
+                if (!salesChartContainer) {
+                    console.warn('Sales chart container (#salesChartContainer) not found. Chart cannot be rendered.');
+                    return;
+                }
+                const products = getData(PRODUCTS_KEY) || [];
+
+                let canvas = salesChartContainer.querySelector('canvas');
+                if (!canvas) { 
+                    canvas = document.createElement('canvas');
+                    salesChartContainer.innerHTML = ''; 
+                    salesChartContainer.appendChild(canvas);
+                }
+                const ctx = canvas.getContext('2d');
+
+                if (salesChartInstance) { 
+                    salesChartInstance.destroy(); // Destroy old instance if exists
+                }
+                salesChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: products.map(p => p.name), // Product names for X-axis labels
+                        datasets: [{
+                            label: 'Quantity Sold', // Legend label
+                            data: products.map(p => p.quantitySold || 0), // Data points (quantity sold)
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)', // Bar color (greenish)
+                            borderColor: 'rgba(75, 192, 192, 1)',     // Bar border color
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { 
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } } 
+                    }
+                });
+            }
+
+            /**
+             * Calculates and displays the total estimated revenue in the dashboard for admin users.
+             * Revenue is based on the total quantity sold of all products multiplied by a `FIXED_PRICE_PER_UNIT`.
+             */
+            function displayRevenue() {
+                if (!revenueDisplay) { 
+                    console.warn('Revenue display element (#revenueDisplay) not found. Cannot display revenue.');
+                    return;
+                }
+                // Ensure only admin users can see the revenue display; clear content for others.
+                if (!currentUser || currentUser.role !== 'admin') {
+                    revenueDisplay.innerHTML = ''; // Clear content if not admin
+                    // Visibility of the revenueDisplay container itself is handled by updateUIForRole
+                    return;
+                }
+                const products = getData(PRODUCTS_KEY) || [];
+                let totalRevenue = 0;
+                products.forEach(product => {
+                    totalRevenue += (product.quantitySold || 0) * FIXED_PRICE_PER_UNIT;
+                });
+                // COMMENT: This revenue calculation is an ESTIMATION. A real-world application would use actual transaction prices,
+                // potentially stored with each sales record, or more complex pricing rules per product.
+                revenueDisplay.innerHTML = `<h4>Total Estimated Revenue: $${totalRevenue.toFixed(2)} <small>(at $${FIXED_PRICE_PER_UNIT}/unit)</small></h4>`;
+            }
+
+            // --- Wrappers for Data Modification Functions to Update Charts ---
+            // These wrapper functions ensure that after a data modification operation (like adding/editing/deleting a product,
+            // adding manufacturing data, or adding sales data), the dashboard charts and revenue display are refreshed
+            // IF the dashboard is currently visible to the user. This keeps the dashboard live.
+
+            /**
+             * Wrapper for `handleAddManufacturingRecord` to ensure charts and revenue are updated.
+             * Calls the original function, then updates dashboard elements if visible.
+             */
+            const originalHandleAddManufacturingRecord = handleAddManufacturingRecord;
+            handleAddManufacturingRecord = function(event) {
+                originalHandleAddManufacturingRecord.call(this, event); // Execute the original function logic
+                // Check if the dashboard is currently displayed
+                if (document.getElementById('dashboardSection').style.display === 'block') {
+                    renderManufacturingChart(); // Manufacturing quantity changed
+                    renderSalesChart();         // Available stock for sales chart might be perceived differently by user looking at stock changes
+                    if (currentUser && currentUser.role === 'admin') displayRevenue(); // Revenue doesn't directly change from manufacturing, but good practice to refresh admin view
+                }
+            }
+
+            /**
+             * Wrapper for `handleProductFormSubmit` (Admin add/edit products) to ensure charts and revenue are updated.
+             */
+            const originalHandleProductFormSubmit = handleProductFormSubmit;
+            handleProductFormSubmit = function(event) {
+                originalHandleProductFormSubmit.call(this, event);
+                if (document.getElementById('dashboardSection').style.display === 'block') {
+                    renderManufacturingChart(); // Product details (name, total qty) might change
+                    renderSalesChart();         // Product name or sold qty (if total quantity was edited impacting available stock display)
+                    if (currentUser && currentUser.role === 'admin') displayRevenue(); // Product changes might affect revenue if sold quantity was part of edit (not directly here)
+                }
+            }
+
+            /**
+             * Wrapper for `handleDeleteProduct` (Admin delete products) to ensure charts and revenue are updated.
+             */
+            const originalHandleDeleteProduct = handleDeleteProduct;
+            handleDeleteProduct = function(productIdString) {
+                originalHandleDeleteProduct.call(this, productIdString);
+                if (document.getElementById('dashboardSection').style.display === 'block') {
+                    renderManufacturingChart(); // Product removed from chart
+                    renderSalesChart();         // Product removed from chart
+                    if (currentUser && currentUser.role === 'admin') displayRevenue(); // Revenue from this product (if any sold) is now gone
+                }
+            }
+            // Note: handleAddSaleRecord already includes chart/revenue updates within its own logic
+            // because it directly impacts sales figures (which affect revenue) and stock levels (which affect sales chart and manufacturing chart perception).
+            // This was done to ensure immediate refresh of `populateSalesProductSelect` and related UI elements.
+        });
+    </script>
+</body>
+</html>
