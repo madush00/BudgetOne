@@ -785,7 +785,7 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <div class="logo">🍛 බජට් One</div>
+            <div class="logo"><img src="logol.png" width="150" height="150"> බජට් One</div>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#menu">Menu</a></li>
@@ -1259,121 +1259,37 @@
     </div>
 
     <script>
-        // LocalStorage Keys
-        const STORAGE_KEYS = {
-            USERS: 'budgetone_users',
-            CURRENT_USER: 'budgetone_current_user',
-            MENU_ITEMS: 'budgetone_menu',
-            CART: 'budgetone_cart',
-            ORDERS: 'budgetone_orders',
-            RESERVATIONS: 'budgetone_reservations',
-            REVIEWS: 'budgetone_reviews'
-        };
-
-        // Initialize Default Data
-        const DEFAULT_DATA = {
-            users: [
-                { id: 1, name: 'Admin', email: 'admin@budgetone.com', phone: '0704400939', password: 'admin123', role: 'admin', points: 0 }
-            ],
-            menuItems: [
-                { id: 1, name: 'Chicken Rice & Curry', category: 'rice', price: 400, emoji: '🍛' },
-                { id: 2, name: 'Fish Rice & Curry', category: 'rice', price: 380, emoji: '🍛' },
-                { id: 3, name: 'Vegetable Fried Rice', category: 'rice', price: 350, emoji: '🍚' },
-                { id: 4, name: 'Chicken Fried Rice', category: 'rice', price: 450, emoji: '🍗' },
-                { id: 5, name: 'Egg Kottu', category: 'kottu', price: 350, emoji: '🍜' },
-                { id: 6, name: 'Chicken Kottu', category: 'kottu', price: 500, emoji: '🍜' },
-                { id: 7, name: 'Cheese Kottu', category: 'kottu', price: 550, emoji: '🍝' },
-                { id: 8, name: 'Mix Kottu Special', category: 'kottu', price: 600, emoji: '🍜' },
-                { id: 9, name: 'Fresh Lime Juice', category: 'drinks', price: 150, emoji: '🥤' },
-                { id: 10, name: 'Mango Juice', category: 'drinks', price: 180, emoji: '🧃' },
-                { id: 11, name: 'Tea', category: 'drinks', price: 80, emoji: '☕' },
-                { id: 12, name: 'Milk Shake', category: 'drinks', price: 200, emoji: '🥛' }
-            ],
-            reviews: [
-                { id: 1, userName: 'පෙරේරා', rating: 5, text: 'අපූරු රසයි! හැම දාම මෙතනට යනවා.', date: '2024-02-10' },
-                { id: 2, userName: 'Silva', rating: 5, text: 'Best kottu in town! Highly recommended.', date: '2024-02-08' }
-            ]
-        };
-
-        // LocalStorage Helper Functions
-        function saveToStorage(key, data) {
-            try {
-                localStorage.setItem(key, JSON.stringify(data));
-            } catch (e) {
-                console.error('Error saving to localStorage:', e);
-            }
-        }
-
-        function getFromStorage(key, defaultValue = null) {
-            try {
-                const data = localStorage.getItem(key);
-                return data ? JSON.parse(data) : defaultValue;
-            } catch (e) {
-                console.error('Error reading from localStorage:', e);
-                return defaultValue;
-            }
-        }
-
-        function initializeStorage() {
-            // Initialize users if not exists
-            if (!getFromStorage(STORAGE_KEYS.USERS)) {
-                saveToStorage(STORAGE_KEYS.USERS, DEFAULT_DATA.users);
-            }
-            // Initialize menu items if not exists
-            if (!getFromStorage(STORAGE_KEYS.MENU_ITEMS)) {
-                saveToStorage(STORAGE_KEYS.MENU_ITEMS, DEFAULT_DATA.menuItems);
-            }
-            // Initialize reviews if not exists
-            if (!getFromStorage(STORAGE_KEYS.REVIEWS)) {
-                saveToStorage(STORAGE_KEYS.REVIEWS, DEFAULT_DATA.reviews);
-            }
-            // Initialize other data structures
-            if (!getFromStorage(STORAGE_KEYS.CART)) {
-                saveToStorage(STORAGE_KEYS.CART, []);
-            }
-            if (!getFromStorage(STORAGE_KEYS.ORDERS)) {
-                saveToStorage(STORAGE_KEYS.ORDERS, []);
-            }
-            if (!getFromStorage(STORAGE_KEYS.RESERVATIONS)) {
-                saveToStorage(STORAGE_KEYS.RESERVATIONS, []);
-            }
-        }
-
-        // Data Storage - Load from localStorage
-        let users = getFromStorage(STORAGE_KEYS.USERS, DEFAULT_DATA.users);
-        let currentUser = getFromStorage(STORAGE_KEYS.CURRENT_USER, null);
-        let menuItems = getFromStorage(STORAGE_KEYS.MENU_ITEMS, DEFAULT_DATA.menuItems);
-        let cart = getFromStorage(STORAGE_KEYS.CART, []);
-        let orders = getFromStorage(STORAGE_KEYS.ORDERS, []);
-        let reservations = getFromStorage(STORAGE_KEYS.RESERVATIONS, []);
-        let reviews = getFromStorage(STORAGE_KEYS.REVIEWS, DEFAULT_DATA.reviews);
+        // Data Storage
+        let users = [
+            { id: 1, name: 'Admin', email: 'admin@budgetone.com', phone: '0704400939', password: 'admin123', role: 'admin', points: 0 }
+        ];
+        let currentUser = null;
+        let menuItems = [
+            { id: 1, name: 'Chicken Rice & Curry', category: 'rice', price: 400, emoji: '🍛' },
+            { id: 2, name: 'Fish Rice & Curry', category: 'rice', price: 380, emoji: '🍛' },
+            { id: 3, name: 'Vegetable Fried Rice', category: 'rice', price: 350, emoji: '🍚' },
+            { id: 4, name: 'Chicken Fried Rice', category: 'rice', price: 450, emoji: '🍗' },
+            { id: 5, name: 'Egg Kottu', category: 'kottu', price: 350, emoji: '🍜' },
+            { id: 6, name: 'Chicken Kottu', category: 'kottu', price: 500, emoji: '🍜' },
+            { id: 7, name: 'Cheese Kottu', category: 'kottu', price: 550, emoji: '🍝' },
+            { id: 8, name: 'Mix Kottu Special', category: 'kottu', price: 600, emoji: '🍜' },
+            { id: 9, name: 'Fresh Lime Juice', category: 'drinks', price: 150, emoji: '🥤' },
+            { id: 10, name: 'Mango Juice', category: 'drinks', price: 180, emoji: '🧃' },
+            { id: 11, name: 'Tea', category: 'drinks', price: 80, emoji: '☕' },
+            { id: 12, name: 'Milk Shake', category: 'drinks', price: 200, emoji: '🥛' }
+        ];
+        let cart = [];
+        let orders = [];
+        let reservations = [];
+        let reviews = [
+            { id: 1, userName: 'පෙරේරා', rating: 5, text: 'අපූරු රසයි! හැම දාම මෙතනට යනවා.', date: '2024-02-10' },
+            { id: 2, userName: 'Silva', rating: 5, text: 'Best kottu in town! Highly recommended.', date: '2024-02-08' }
+        ];
 
         // Initialize
         window.onload = function() {
-            initializeStorage();
-            
-            // Reload data from storage
-            users = getFromStorage(STORAGE_KEYS.USERS, DEFAULT_DATA.users);
-            currentUser = getFromStorage(STORAGE_KEYS.CURRENT_USER, null);
-            menuItems = getFromStorage(STORAGE_KEYS.MENU_ITEMS, DEFAULT_DATA.menuItems);
-            cart = getFromStorage(STORAGE_KEYS.CART, []);
-            orders = getFromStorage(STORAGE_KEYS.ORDERS, []);
-            reservations = getFromStorage(STORAGE_KEYS.RESERVATIONS, []);
-            reviews = getFromStorage(STORAGE_KEYS.REVIEWS, DEFAULT_DATA.reviews);
-            
             renderMenu();
             loadReviews();
-            
-            // Auto-login if user session exists
-            if (currentUser) {
-                // Update current user with latest data from users array
-                const updatedUser = users.find(u => u.id === currentUser.id);
-                if (updatedUser) {
-                    currentUser = updatedUser;
-                    saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
-                    loginSuccess(true); // true = skip welcome message on reload
-                }
-            }
         };
 
         // Auth Functions
@@ -1408,7 +1324,6 @@
                 const user = users.find(u => u.email === email && u.password === password);
                 if (user) {
                     currentUser = user;
-                    saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
                     loginSuccess();
                 } else {
                     alert('Invalid email or password!');
@@ -1429,15 +1344,12 @@
                     points: 0
                 };
                 users.push(newUser);
-                saveToStorage(STORAGE_KEYS.USERS, users);
-                
                 currentUser = newUser;
-                saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
                 loginSuccess();
             }
         }
 
-        function loginSuccess(isAutoLogin = false) {
+        function loginSuccess() {
             closeModal('authModal');
             document.getElementById('authForm').reset();
             updateNavigation();
@@ -1450,10 +1362,7 @@
             }
             
             loadUserData();
-            
-            if (!isAutoLogin) {
-                alert(`Welcome ${currentUser.name}! 🎉`);
-            }
+            alert(`Welcome ${currentUser.name}! 🎉`);
         }
 
         function updateNavigation() {
@@ -1478,11 +1387,6 @@
             if (confirm('Are you sure you want to logout?')) {
                 currentUser = null;
                 cart = [];
-                
-                // Clear session data from localStorage
-                saveToStorage(STORAGE_KEYS.CURRENT_USER, null);
-                saveToStorage(STORAGE_KEYS.CART, []);
-                
                 document.getElementById('loggedInSections').classList.add('hidden');
                 document.getElementById('adminSection').classList.add('hidden');
                 document.getElementById('cartFloat').classList.add('hidden');
@@ -1542,7 +1446,6 @@
             }
 
             cart.push({ name, price });
-            saveToStorage(STORAGE_KEYS.CART, cart);
             updateCart();
             
             const btn = event.target;
@@ -1586,7 +1489,6 @@
 
         function removeFromCart(index) {
             cart.splice(index, 1);
-            saveToStorage(STORAGE_KEYS.CART, cart);
             updateCart();
         }
 
@@ -1624,20 +1526,8 @@
                 status: 1
             };
             orders.push(newOrder);
-            saveToStorage(STORAGE_KEYS.ORDERS, orders);
             
-            // Update points
-            const earnedPoints = Math.floor(total / 100) * 10;
-            currentUser.points += earnedPoints;
-            
-            // Update user in users array
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex].points = currentUser.points;
-                saveToStorage(STORAGE_KEYS.USERS, users);
-            }
-            saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
-            
+            currentUser.points += Math.floor(total / 100) * 10;
             updateNavigation();
             
             if (currentUser.role === 'admin') {
@@ -1649,10 +1539,9 @@
             window.open(`https://wa.me/94704400939?text=${encodeURIComponent(message)}`, '_blank');
             
             cart = [];
-            saveToStorage(STORAGE_KEYS.CART, cart);
             updateCart();
             closeModal('cartModal');
-            alert(`Order placed! You earned ${earnedPoints} points! 🎉`);
+            alert(`Order placed! You earned ${Math.floor(total / 100) * 10} points! 🎉`);
         }
 
         // Reviews
@@ -1694,18 +1583,8 @@
                 date: new Date().toLocaleDateString()
             };
             reviews.push(review);
-            saveToStorage(STORAGE_KEYS.REVIEWS, reviews);
             
             currentUser.points += 25;
-            
-            // Update user in users array
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex].points = currentUser.points;
-                saveToStorage(STORAGE_KEYS.USERS, users);
-            }
-            saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
-            
             updateNavigation();
             
             loadReviews();
@@ -1728,18 +1607,8 @@
                 notes: document.getElementById('resNotes').value
             };
             reservations.push(reservation);
-            saveToStorage(STORAGE_KEYS.RESERVATIONS, reservations);
             
             currentUser.points += 50;
-            
-            // Update user in users array
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex].points = currentUser.points;
-                saveToStorage(STORAGE_KEYS.USERS, users);
-            }
-            saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
-            
             updateNavigation();
             
             if (currentUser.role === 'admin') {
@@ -1896,7 +1765,6 @@
                 points: 0
             };
             users.push(newUser);
-            saveToStorage(STORAGE_KEYS.USERS, users);
             loadUsersTable();
             closeModal('addUserModal');
             e.target.reset();
@@ -1921,16 +1789,6 @@
             user.email = document.getElementById('editUserEmail').value;
             user.phone = document.getElementById('editUserPhone').value;
             user.role = document.getElementById('editUserRole').value;
-            
-            saveToStorage(STORAGE_KEYS.USERS, users);
-            
-            // Update current user if editing self
-            if (currentUser && currentUser.id === id) {
-                currentUser = user;
-                saveToStorage(STORAGE_KEYS.CURRENT_USER, currentUser);
-                updateNavigation();
-            }
-            
             loadUsersTable();
             closeModal('editUserModal');
             alert('User updated successfully! ✅');
@@ -1939,7 +1797,6 @@
         function deleteUser(id) {
             if (confirm('Are you sure you want to delete this user?')) {
                 users = users.filter(u => u.id !== id);
-                saveToStorage(STORAGE_KEYS.USERS, users);
                 loadUsersTable();
                 alert('User deleted! ✅');
             }
@@ -1963,8 +1820,6 @@
             
             const user = users.find(u => u.id === id);
             user.password = newPass;
-            saveToStorage(STORAGE_KEYS.USERS, users);
-            
             closeModal('changePasswordModal');
             e.target.reset();
             alert('Password changed successfully! ✅');
@@ -1984,7 +1839,6 @@
                 emoji: document.getElementById('newMenuEmoji').value || '🍽️'
             };
             menuItems.push(newItem);
-            saveToStorage(STORAGE_KEYS.MENU_ITEMS, menuItems);
             loadMenuTable();
             renderMenu();
             closeModal('addMenuModal');
@@ -1995,7 +1849,6 @@
         function deleteMenuItem(id) {
             if (confirm('Delete this menu item?')) {
                 menuItems = menuItems.filter(m => m.id !== id);
-                saveToStorage(STORAGE_KEYS.MENU_ITEMS, menuItems);
                 loadMenuTable();
                 renderMenu();
                 alert('Menu item deleted! ✅');
@@ -2005,14 +1858,12 @@
         function updateOrderStatus(orderId, status) {
             const order = orders.find(o => o.id === orderId);
             order.status = parseInt(status);
-            saveToStorage(STORAGE_KEYS.ORDERS, orders);
             loadUserData();
         }
 
         function deleteOrder(id) {
             if (confirm('Delete this order?')) {
                 orders = orders.filter(o => o.id !== id);
-                saveToStorage(STORAGE_KEYS.ORDERS, orders);
                 loadOrdersTable();
                 loadUserData();
                 alert('Order deleted! ✅');
@@ -2022,7 +1873,6 @@
         function deleteReservation(id) {
             if (confirm('Delete this reservation?')) {
                 reservations = reservations.filter(r => r.id !== id);
-                saveToStorage(STORAGE_KEYS.RESERVATIONS, reservations);
                 loadReservationsTable();
                 alert('Reservation deleted! ✅');
             }
